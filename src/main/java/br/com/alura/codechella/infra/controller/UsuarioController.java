@@ -1,6 +1,8 @@
 package br.com.alura.codechella.infra.controller;
 
 import br.com.alura.codechella.application.usecases.CriarUsuario;
+import br.com.alura.codechella.application.usecases.EditarUsuario;
+import br.com.alura.codechella.application.usecases.ExcluirUsuario;
 import br.com.alura.codechella.application.usecases.ListarUsuarios;
 import br.com.alura.codechella.domain.entities.usuario.Usuario;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,15 @@ public class UsuarioController {
 
     private final ListarUsuarios listarUsuarios;
 
-    public UsuarioController(CriarUsuario criarUsuario, ListarUsuarios listarUsuarios) {
+    private final EditarUsuario editarUsuario;
+
+    private final ExcluirUsuario excluirUsuario;
+
+    public UsuarioController(CriarUsuario criarUsuario, ListarUsuarios listarUsuarios, EditarUsuario editarUsuario, ExcluirUsuario excluirUsuario) {
         this.criarUsuario = criarUsuario;
         this.listarUsuarios = listarUsuarios;
+        this.editarUsuario = editarUsuario;
+        this.excluirUsuario = excluirUsuario;
     }
 
     @PostMapping
@@ -36,4 +44,16 @@ public class UsuarioController {
                 .map(u -> new UsuarioDto(u.getCpf(), u.getNome(), u.getNascimento(), u.getEmail()))
                 .collect(Collectors.toList());
     }
+
+    @PutMapping("/{cpf}")
+    public UsuarioDto atualizarUsuario(@PathVariable String cpf, @RequestBody UsuarioDto dto){
+        Usuario atualizado = editarUsuario.editarDadosUsuario(cpf, new Usuario(dto.cpf(), dto.nome(), dto.nascimento(), dto.email()));
+        return new UsuarioDto(atualizado.getCpf(), atualizado.getNome(), atualizado.getNascimento(), atualizado.getEmail());
+    }
+
+    @DeleteMapping("/{cpf}")
+    public void excluirUsuario(@PathVariable String cpf){
+        excluirUsuario.excluirUsuarioPorCpf(cpf);
+    }
+
 }

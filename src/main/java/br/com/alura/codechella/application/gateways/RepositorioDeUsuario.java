@@ -10,4 +10,8 @@ public interface RepositorioDeUsuario {
 
     List<Usuario> listarTodos();
 
+    Usuario editarUsuario(String cpf, Usuario usuario);
+
+    void excluirUsuario(String cpf);
+
 }
